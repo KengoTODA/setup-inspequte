@@ -1,23 +1,22 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: Setup inspequte
+description: Install inspequte CLI and add it to PATH
+author: Kengo TODA
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: heart
-  color: red
+  icon: download-cloud
+  color: blue
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
-    required: true
-    default: '1000'
+  version:
+    description:
+      Version of inspequte to install (for example, v0.1.0 or 0.1.0). Defaults
+      to latest release.
+    required: false
+    default: ''
 
-# Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  version:
+    description: Installed inspequte version tag
 
 runs:
   using: node24

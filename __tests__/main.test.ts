@@ -1,62 +1,198 @@
-/**
- * Unit tests for the action's main functionality, src/main.ts
- *
- * To mock dependencies in ESM, you can create fixtures that export mock
- * functions and objects. For example, the core module is mocked in this test,
- * so that the actual '@actions/core' module is not imported.
- */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+import * as tc from '../__fixtures__/tool-cache.js'
 
-// Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
+jest.unstable_mockModule('@actions/tool-cache', () => tc)
 
-// The module being tested should be imported dynamically. This ensures that the
-// mocks are used in place of any actual dependencies.
-const { run } = await import('../src/main.js')
+const {
+  run,
+  normalizeVersionInput,
+  resolveReleaseAsset,
+  resolveInstallTarget,
+  toCacheVersion
+} = await import('../src/main.js')
 
 describe('main.ts', () => {
-  beforeEach(() => {
-    // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
+  const originalFetch = global.fetch
+  const fetchMock = jest.fn<typeof fetch>()
 
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
+  beforeEach(() => {
+    global.fetch = fetchMock
+    core.getInput.mockImplementation((name) =>
+      name === 'version' ? '' : 'unexpected'
+    )
+    tc.find.mockReturnValue('')
+    tc.downloadTool.mockResolvedValue('/tmp/inspequte.tar.gz')
+    tc.extractTar.mockResolvedValue('/tmp/extracted')
+    tc.extractZip.mockResolvedValue('/tmp/extracted')
+    tc.cacheDir.mockResolvedValue('/tmp/cached-tool')
   })
 
   afterEach(() => {
+    global.fetch = originalFetch
     jest.resetAllMocks()
   })
 
-  it('Sets the time output', async () => {
+  it('Installs the latest release by default', async () => {
+    const target = resolveInstallTarget(process.platform, process.arch)
+    const assetUrl = 'https://example.com/inspequte.tar.gz'
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => [
+        {
+          tag_name: 'inspequte-v0.13.0',
+          assets: [
+            {
+              name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+              browser_download_url: assetUrl
+            }
+          ]
+        }
+      ]
+    } as Response)
+
     await run()
 
-    // Verify the time output was set.
-    expect(core.setOutput).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
-      expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(tc.downloadTool).toHaveBeenCalledWith(assetUrl)
+    expect(tc.cacheDir).toHaveBeenCalledWith(
+      '/tmp/extracted',
+      'inspequte',
+      '0.13.0',
+      process.arch
+    )
+    expect(core.addPath).toHaveBeenCalledWith('/tmp/cached-tool')
+    expect(core.setOutput).toHaveBeenCalledWith('version', 'inspequte-v0.13.0')
+  })
+
+  it('Installs the requested version', async () => {
+    const target = resolveInstallTarget(process.platform, process.arch)
+    const assetUrl = 'https://example.com/inspequte.tar.gz'
+    core.getInput.mockImplementation((name) =>
+      name === 'version' ? '0.13.0' : 'unexpected'
+    )
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => ({
+        tag_name: 'inspequte-v0.13.0',
+        assets: [
+          {
+            name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+            browser_download_url: assetUrl
+          }
+        ]
+      })
+    } as Response)
+
+    await run()
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.github.com/repos/KengoTODA/inspequte/releases/tags/inspequte-v0.13.0',
+      expect.anything()
+    )
+    expect(tc.downloadTool).toHaveBeenCalledWith(assetUrl)
+    expect(core.setOutput).toHaveBeenCalledWith('version', 'inspequte-v0.13.0')
+  })
+
+  it('Uses the tool cache when available', async () => {
+    const target = resolveInstallTarget(process.platform, process.arch)
+    tc.find.mockReturnValue('/tmp/cached-inspequte')
+    core.getInput.mockImplementation((name) =>
+      name === 'version' ? 'v2.0.0' : 'unexpected'
+    )
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => ({
+        tag_name: 'inspequte-v2.0.0',
+        assets: [
+          {
+            name: `inspequte-inspequte-v2.0.0-${target.targetTriple}.${target.archiveExtension}`,
+            browser_download_url: 'https://example.com/inspequte.tar.gz'
+          }
+        ]
+      })
+    } as Response)
+
+    await run()
+
+    expect(tc.find).toHaveBeenCalledWith('inspequte', '2.0.0', process.arch)
+    expect(tc.downloadTool).not.toHaveBeenCalled()
+    expect(tc.extractTar).not.toHaveBeenCalled()
+    expect(tc.extractZip).not.toHaveBeenCalled()
+    expect(tc.cacheDir).not.toHaveBeenCalled()
+    expect(core.addPath).toHaveBeenCalledWith('/tmp/cached-inspequte')
+    expect(core.setOutput).toHaveBeenCalledWith('version', 'inspequte-v2.0.0')
+  })
+
+  it('Sets failed status when release lookup fails', async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: async () => ({})
+    } as Response)
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'Failed to fetch inspequte releases: 500 Internal Server Error'
     )
   })
 
-  it('Sets a failed status', async () => {
-    // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
+  it('Resolve release from list and skip releases without matching assets', async () => {
+    const target = resolveInstallTarget(process.platform, process.arch)
+    const assetUrl = 'https://example.com/inspequte.tar.gz'
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => [
+        {
+          tag_name: 'inspequte-v9.9.9',
+          draft: false,
+          prerelease: false,
+          assets: []
+        },
+        {
+          tag_name: 'inspequte-v0.13.0',
+          draft: false,
+          prerelease: false,
+          assets: [
+            {
+              name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+              browser_download_url: assetUrl
+            }
+          ]
+        }
+      ]
+    } as Response)
 
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+    await expect(resolveReleaseAsset('', target)).resolves.toEqual({
+      tagName: 'inspequte-v0.13.0',
+      downloadUrl: assetUrl
+    })
+  })
 
-    await run()
+  it('Normalizes version input and cache version', () => {
+    expect(normalizeVersionInput('')).toBe('')
+    expect(normalizeVersionInput('1.2.3')).toBe('inspequte-v1.2.3')
+    expect(normalizeVersionInput('v1.2.3')).toBe('inspequte-v1.2.3')
+    expect(normalizeVersionInput('inspequte-v1.2.3')).toBe('inspequte-v1.2.3')
+    expect(toCacheVersion('inspequte-v1.2.3')).toBe('1.2.3')
+    expect(toCacheVersion('v1.2.3')).toBe('1.2.3')
+    expect(toCacheVersion('1.2.3')).toBe('1.2.3')
+  })
 
-    // Verify that the action was marked as failed.
-    expect(core.setFailed).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds is not a number'
+  it('Throws on unsupported platform combinations', () => {
+    expect(() => resolveInstallTarget('linux', 'arm64')).toThrow(
+      'Unsupported platform/arch combination: linux/arm64'
     )
   })
 })
