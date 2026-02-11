@@ -60353,18 +60353,24 @@ function resolveInstallTarget(platform, arch) {
     if (platform === 'linux' && arch === 'x64') {
         return {
             targetTriple: 'x86_64-unknown-linux-gnu',
+            assetTargetTriples: [
+                'x86_64-unknown-linux-gnu',
+                'amd64-unknown-linux-gnu'
+            ],
             archiveExtension: 'tar.gz'
         };
     }
     if (platform === 'darwin' && arch === 'arm64') {
         return {
             targetTriple: 'aarch64-apple-darwin',
+            assetTargetTriples: ['aarch64-apple-darwin', 'arm64-apple-darwin'],
             archiveExtension: 'tar.gz'
         };
     }
     if (platform === 'win32' && arch === 'x64') {
         return {
             targetTriple: 'x86_64-pc-windows-msvc',
+            assetTargetTriples: ['x86_64-pc-windows-msvc', 'amd64-pc-windows-msvc'],
             archiveExtension: 'zip'
         };
     }
@@ -60428,8 +60434,8 @@ async function getReleases() {
  * Find the release asset that matches current runner target.
  */
 function findReleaseAsset(release, target) {
-    const suffix = `-${target.targetTriple}.${target.archiveExtension}`;
-    return release.assets?.find((asset) => asset.name?.endsWith(suffix) === true &&
+    const suffixes = target.assetTargetTriples.map((targetTriple) => `-${targetTriple}.${target.archiveExtension}`);
+    return release.assets?.find((asset) => suffixes.some((suffix) => asset.name?.endsWith(suffix) === true) &&
         asset.browser_download_url !== undefined);
 }
 /**

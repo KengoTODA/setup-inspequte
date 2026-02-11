@@ -6,6 +6,7 @@ jest.unstable_mockModule('@actions/core', () => core)
 jest.unstable_mockModule('@actions/tool-cache', () => tc)
 
 const {
+  findReleaseAsset,
   run,
   normalizeVersionInput,
   resolveReleaseAsset,
@@ -46,7 +47,7 @@ describe('main.ts', () => {
           tag_name: 'inspequte-v0.13.0',
           assets: [
             {
-              name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+              name: `inspequte-inspequte-v0.13.0-${target.assetTargetTriples[1]}.${target.archiveExtension}`,
               browser_download_url: assetUrl
             }
           ]
@@ -82,7 +83,7 @@ describe('main.ts', () => {
         tag_name: 'inspequte-v0.13.0',
         assets: [
           {
-            name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+            name: `inspequte-inspequte-v0.13.0-${target.assetTargetTriples[1]}.${target.archiveExtension}`,
             browser_download_url: assetUrl
           }
         ]
@@ -113,7 +114,7 @@ describe('main.ts', () => {
         tag_name: 'inspequte-v2.0.0',
         assets: [
           {
-            name: `inspequte-inspequte-v2.0.0-${target.targetTriple}.${target.archiveExtension}`,
+            name: `inspequte-inspequte-v2.0.0-${target.assetTargetTriples[1]}.${target.archiveExtension}`,
             browser_download_url: 'https://example.com/inspequte.tar.gz'
           }
         ]
@@ -166,7 +167,7 @@ describe('main.ts', () => {
           prerelease: false,
           assets: [
             {
-              name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+              name: `inspequte-inspequte-v0.13.0-${target.assetTargetTriples[1]}.${target.archiveExtension}`,
               browser_download_url: assetUrl
             }
           ]
@@ -178,6 +179,40 @@ describe('main.ts', () => {
       tagName: 'inspequte-v0.13.0',
       downloadUrl: assetUrl
     })
+  })
+
+  it('Finds assets with both legacy and current architecture labels', () => {
+    const target = resolveInstallTarget(process.platform, process.arch)
+    const legacyAssetUrl = 'https://example.com/legacy-asset'
+    const currentAssetUrl = 'https://example.com/current-asset'
+
+    expect(
+      findReleaseAsset(
+        {
+          assets: [
+            {
+              name: `inspequte-inspequte-v0.14.0-${target.assetTargetTriples[0]}.${target.archiveExtension}`,
+              browser_download_url: legacyAssetUrl
+            }
+          ]
+        },
+        target
+      )?.browser_download_url
+    ).toBe(legacyAssetUrl)
+
+    expect(
+      findReleaseAsset(
+        {
+          assets: [
+            {
+              name: `inspequte-inspequte-v0.15.1-${target.assetTargetTriples[1]}.${target.archiveExtension}`,
+              browser_download_url: currentAssetUrl
+            }
+          ]
+        },
+        target
+      )?.browser_download_url
+    ).toBe(currentAssetUrl)
   })
 
   it('Normalizes version input and cache version', () => {

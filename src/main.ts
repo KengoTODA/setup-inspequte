@@ -6,6 +6,7 @@ const TOOL_REPOSITORY = 'KengoTODA/inspequte'
 
 type InstallTarget = {
   targetTriple: string
+  assetTargetTriples: string[]
   archiveExtension: 'tar.gz' | 'zip'
 }
 
@@ -36,6 +37,10 @@ export function resolveInstallTarget(
   if (platform === 'linux' && arch === 'x64') {
     return {
       targetTriple: 'x86_64-unknown-linux-gnu',
+      assetTargetTriples: [
+        'x86_64-unknown-linux-gnu',
+        'amd64-unknown-linux-gnu'
+      ],
       archiveExtension: 'tar.gz'
     }
   }
@@ -43,6 +48,7 @@ export function resolveInstallTarget(
   if (platform === 'darwin' && arch === 'arm64') {
     return {
       targetTriple: 'aarch64-apple-darwin',
+      assetTargetTriples: ['aarch64-apple-darwin', 'arm64-apple-darwin'],
       archiveExtension: 'tar.gz'
     }
   }
@@ -50,6 +56,7 @@ export function resolveInstallTarget(
   if (platform === 'win32' && arch === 'x64') {
     return {
       targetTriple: 'x86_64-pc-windows-msvc',
+      assetTargetTriples: ['x86_64-pc-windows-msvc', 'amd64-pc-windows-msvc'],
       archiveExtension: 'zip'
     }
   }
@@ -139,10 +146,12 @@ export function findReleaseAsset(
   release: GitHubRelease,
   target: InstallTarget
 ): GitHubReleaseAsset | undefined {
-  const suffix = `-${target.targetTriple}.${target.archiveExtension}`
+  const suffixes = target.assetTargetTriples.map(
+    (targetTriple) => `-${targetTriple}.${target.archiveExtension}`
+  )
   return release.assets?.find(
     (asset) =>
-      asset.name?.endsWith(suffix) === true &&
+      suffixes.some((suffix) => asset.name?.endsWith(suffix) === true) &&
       asset.browser_download_url !== undefined
   )
 }
