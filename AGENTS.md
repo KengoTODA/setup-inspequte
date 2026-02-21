@@ -60,7 +60,7 @@ If target is unsupported, fail with a clear error.
 
 ## Change Guardrails
 
-- Keep README usage examples aligned with `action.yml`.
+- Keep `README.md` usage examples aligned with `action.yml`.
 - Keep tests aligned with release/tag naming conventions used by `inspequte`.
 - Do not remove caching behavior.
 - Do not manually edit `dist/`; always regenerate via `npm run package`.
