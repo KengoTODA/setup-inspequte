@@ -44,13 +44,13 @@ If target is unsupported, fail with a clear error.
 
 1. Install dependencies:
    - `npm ci`
-2. Validate formatting/lint/tests:
+1. Validate formatting/lint/tests:
    - `npm run format:check`
    - `npm run lint`
    - `npm run ci-test`
-3. Rebuild distributable:
+1. Rebuild distributable:
    - `npm run package`
-4. Ensure `dist/` is updated when source changes.
+1. Ensure `dist/` is updated when source changes.
 
 ## Environment Notes
 
