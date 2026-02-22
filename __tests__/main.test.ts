@@ -70,19 +70,20 @@ describe('main.ts', () => {
 
   it('Installs the requested version', async () => {
     const target = resolveInstallTarget(process.platform, process.arch)
+    const requestedAssetTriple = target.targetTripleAliases[0] ?? target.targetTriple
     const assetUrl = 'https://example.com/inspequte.tar.gz'
     core.getInput.mockImplementation((name) =>
-      name === 'version' ? '0.13.0' : 'unexpected'
+      name === 'version' ? '0.16.0' : 'unexpected'
     )
     fetchMock.mockResolvedValue({
       ok: true,
       status: 200,
       statusText: 'OK',
       json: async () => ({
-        tag_name: 'inspequte-v0.13.0',
+        tag_name: 'inspequte-v0.16.0',
         assets: [
           {
-            name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+            name: `inspequte-v0.16.0-${requestedAssetTriple}.${target.archiveExtension}`,
             browser_download_url: assetUrl
           }
         ]
@@ -92,11 +93,11 @@ describe('main.ts', () => {
     await run()
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.github.com/repos/KengoTODA/inspequte/releases/tags/inspequte-v0.13.0',
+      'https://api.github.com/repos/KengoTODA/inspequte/releases/tags/inspequte-v0.16.0',
       expect.anything()
     )
     expect(tc.downloadTool).toHaveBeenCalledWith(assetUrl)
-    expect(core.setOutput).toHaveBeenCalledWith('version', 'inspequte-v0.13.0')
+    expect(core.setOutput).toHaveBeenCalledWith('version', 'inspequte-v0.16.0')
   })
 
   it('Uses the tool cache when available', async () => {
@@ -148,6 +149,7 @@ describe('main.ts', () => {
 
   it('Resolve release from list and skip non-CLI releases', async () => {
     const target = resolveInstallTarget(process.platform, process.arch)
+    const latestAssetTriple = target.targetTripleAliases[0] ?? target.targetTriple
     const assetUrl = 'https://example.com/inspequte.tar.gz'
     fetchMock.mockResolvedValue({
       ok: true,
@@ -178,7 +180,7 @@ describe('main.ts', () => {
           prerelease: false,
           assets: [
             {
-              name: `inspequte-v0.16.0-${target.targetTriple}.${target.archiveExtension}`,
+              name: `inspequte-v0.16.0-${latestAssetTriple}.${target.archiveExtension}`,
               browser_download_url: assetUrl
             }
           ]

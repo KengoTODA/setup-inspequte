@@ -60353,18 +60353,21 @@ function resolveInstallTarget(platform, arch) {
     if (platform === 'linux' && arch === 'x64') {
         return {
             targetTriple: 'x86_64-unknown-linux-gnu',
+            targetTripleAliases: ['amd64-unknown-linux-gnu'],
             archiveExtension: 'tar.gz'
         };
     }
     if (platform === 'darwin' && arch === 'arm64') {
         return {
             targetTriple: 'aarch64-apple-darwin',
+            targetTripleAliases: ['arm64-apple-darwin'],
             archiveExtension: 'tar.gz'
         };
     }
     if (platform === 'win32' && arch === 'x64') {
         return {
             targetTriple: 'x86_64-pc-windows-msvc',
+            targetTripleAliases: ['amd64-pc-windows-msvc'],
             archiveExtension: 'zip'
         };
     }
@@ -60435,8 +60438,8 @@ function isCliRelease(release) {
  * Find the release asset that matches current runner target.
  */
 function findReleaseAsset(release, target) {
-    const suffix = `-${target.targetTriple}.${target.archiveExtension}`;
-    return release.assets?.find((asset) => asset.name?.endsWith(suffix) === true &&
+    const supportedTriples = [target.targetTriple, ...target.targetTripleAliases];
+    return release.assets?.find((asset) => supportedTriples.some((triple) => asset.name?.endsWith(`-${triple}.${target.archiveExtension}`) === true) &&
         asset.browser_download_url !== undefined);
 }
 /**
