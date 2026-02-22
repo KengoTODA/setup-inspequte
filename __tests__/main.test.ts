@@ -70,7 +70,8 @@ describe('main.ts', () => {
 
   it('Installs the requested version', async () => {
     const target = resolveInstallTarget(process.platform, process.arch)
-    const requestedAssetTriple = target.targetTripleAliases[0] ?? target.targetTriple
+    const requestedAssetTriple =
+      target.targetTripleAliases[0] ?? target.targetTriple
     const assetUrl = 'https://example.com/inspequte.tar.gz'
     core.getInput.mockImplementation((name) =>
       name === 'version' ? '0.16.0' : 'unexpected'
@@ -149,7 +150,8 @@ describe('main.ts', () => {
 
   it('Resolve release from list and skip non-CLI releases', async () => {
     const target = resolveInstallTarget(process.platform, process.arch)
-    const latestAssetTriple = target.targetTripleAliases[0] ?? target.targetTriple
+    const latestAssetTriple =
+      target.targetTripleAliases[0] ?? target.targetTriple
     const assetUrl = 'https://example.com/inspequte.tar.gz'
     fetchMock.mockResolvedValue({
       ok: true,

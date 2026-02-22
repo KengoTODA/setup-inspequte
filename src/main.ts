@@ -176,9 +176,9 @@ export function findReleaseAsset(
   return release.assets?.find(
     (asset) =>
       supportedTriples.some(
-        (triple) => asset.name?.endsWith(`-${triple}.${target.archiveExtension}`) === true
-      ) &&
-      asset.browser_download_url !== undefined
+        (triple) =>
+          asset.name?.endsWith(`-${triple}.${target.archiveExtension}`) === true
+      ) && asset.browser_download_url !== undefined
   )
 }
 
