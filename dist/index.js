@@ -60453,8 +60453,7 @@ function isCliRelease(release) {
  */
 function findReleaseAsset(release, target) {
     const supportedTriples = [target.targetTriple, ...target.targetTripleAliases];
-    return release.assets?.find((asset) => supportedTriples.some((triple) => asset.name?.endsWith(`-${triple}.${target.archiveExtension}`) === true) &&
-        asset.browser_download_url !== undefined);
+    return release.assets?.find((asset) => supportedTriples.some((triple) => asset.name?.endsWith(`-${triple}.${target.archiveExtension}`) === true) && asset.browser_download_url !== undefined);
 }
 /**
  * Resolve release tag and downloadable asset URL.

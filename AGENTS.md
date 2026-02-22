@@ -24,10 +24,14 @@ This repository implements a GitHub Action that installs `inspequte`, adds it to
 ## Supported Runner Targets
 
 - `linux/x64` -> `x86_64-unknown-linux-gnu` (`tar.gz`)
+- `linux/arm64` -> `aarch64-unknown-linux-gnu` (`tar.gz`)
+- `darwin/x64` -> `x86_64-apple-darwin` (`tar.gz`)
 - `darwin/arm64` -> `aarch64-apple-darwin` (`tar.gz`)
 - `win32/x64` -> `x86_64-pc-windows-msvc` (`zip`)
 
-If target is unsupported, fail with a clear error.
+If target is unsupported, fail with a clear error. For release asset lookup,
+support both legacy (`x86_64`/`aarch64`) and current (`amd64`/`arm64`) target
+naming.
 
 ## Important Files
 
@@ -51,6 +55,10 @@ If target is unsupported, fail with a clear error.
 1. Rebuild distributable:
    - `npm run package`
 1. Ensure `dist/` is updated when source changes.
+1. Before commit/push, re-run:
+   - `npm run lint`
+   - `npm run format:check`
+   - `npm run package` (when `src/` changed)
 
 ## Environment Notes
 
