@@ -146,7 +146,7 @@ describe('main.ts', () => {
     )
   })
 
-  it('Resolve release from list and skip releases without matching assets', async () => {
+  it('Resolve release from list and skip non-CLI releases', async () => {
     const target = resolveInstallTarget(process.platform, process.arch)
     const assetUrl = 'https://example.com/inspequte.tar.gz'
     fetchMock.mockResolvedValue({
@@ -161,12 +161,24 @@ describe('main.ts', () => {
           assets: []
         },
         {
-          tag_name: 'inspequte-v0.13.0',
+          tag_name: 'gradle-plugin-v9.9.9',
+          name: 'gradle-plugin-v9.9.9',
           draft: false,
           prerelease: false,
           assets: [
             {
-              name: `inspequte-inspequte-v0.13.0-${target.targetTriple}.${target.archiveExtension}`,
+              name: `inspequte-gradle-plugin-${target.targetTriple}.${target.archiveExtension}`,
+              browser_download_url: 'https://example.com/gradle-plugin.tar.gz'
+            }
+          ]
+        },
+        {
+          tag_name: 'inspequte-v0.16.0',
+          draft: false,
+          prerelease: false,
+          assets: [
+            {
+              name: `inspequte-v0.16.0-${target.targetTriple}.${target.archiveExtension}`,
               browser_download_url: assetUrl
             }
           ]
@@ -175,7 +187,7 @@ describe('main.ts', () => {
     } as Response)
 
     await expect(resolveReleaseAsset('', target)).resolves.toEqual({
-      tagName: 'inspequte-v0.13.0',
+      tagName: 'inspequte-v0.16.0',
       downloadUrl: assetUrl
     })
   })

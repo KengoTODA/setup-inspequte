@@ -16,6 +16,7 @@ type GitHubReleaseAsset = {
 
 type GitHubRelease = {
   tag_name?: string
+  name?: string
   draft?: boolean
   prerelease?: boolean
   assets?: GitHubReleaseAsset[]
@@ -132,6 +133,18 @@ export async function getReleases(): Promise<GitHubRelease[]> {
   return (await response.json()) as GitHubRelease[]
 }
 
+const RELEASE_TAG_PREFIX = `${TOOL_NAME}-v`
+
+function hasCliReleasePrefix(value?: string): boolean {
+  return value?.startsWith(RELEASE_TAG_PREFIX) === true
+}
+
+function isCliRelease(release: GitHubRelease): boolean {
+  return (
+    hasCliReleasePrefix(release.tag_name) || hasCliReleasePrefix(release.name)
+  )
+}
+
 /**
  * Find the release asset that matches current runner target.
  */
@@ -172,7 +185,12 @@ export async function resolveReleaseAsset(
 
   const releases = await getReleases()
   for (const release of releases) {
-    if (!release.tag_name || release.draft || release.prerelease) {
+    if (
+      !release.tag_name ||
+      release.draft ||
+      release.prerelease ||
+      !isCliRelease(release)
+    ) {
       continue
     }
 
