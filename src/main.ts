@@ -43,10 +43,26 @@ export function resolveInstallTarget(
     }
   }
 
+  if (platform === 'linux' && arch === 'arm64') {
+    return {
+      targetTriple: 'aarch64-unknown-linux-gnu',
+      targetTripleAliases: ['arm64-unknown-linux-gnu'],
+      archiveExtension: 'tar.gz'
+    }
+  }
+
   if (platform === 'darwin' && arch === 'arm64') {
     return {
       targetTriple: 'aarch64-apple-darwin',
       targetTripleAliases: ['arm64-apple-darwin'],
+      archiveExtension: 'tar.gz'
+    }
+  }
+
+  if (platform === 'darwin' && arch === 'x64') {
+    return {
+      targetTriple: 'x86_64-apple-darwin',
+      targetTripleAliases: ['amd64-apple-darwin'],
       archiveExtension: 'tar.gz'
     }
   }
