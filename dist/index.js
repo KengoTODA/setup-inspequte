@@ -60424,6 +60424,13 @@ async function getReleases() {
     }
     return (await response.json());
 }
+const RELEASE_TAG_PREFIX = `${TOOL_NAME}-v`;
+function hasCliReleasePrefix(value) {
+    return value?.startsWith(RELEASE_TAG_PREFIX) === true;
+}
+function isCliRelease(release) {
+    return (hasCliReleasePrefix(release.tag_name) || hasCliReleasePrefix(release.name));
+}
 /**
  * Find the release asset that matches current runner target.
  */
@@ -60450,7 +60457,10 @@ async function resolveReleaseAsset(versionInput, target) {
     }
     const releases = await getReleases();
     for (const release of releases) {
-        if (!release.tag_name || release.draft || release.prerelease) {
+        if (!release.tag_name ||
+            release.draft ||
+            release.prerelease ||
+            !isCliRelease(release)) {
             continue;
         }
         const asset = findReleaseAsset(release, target);
