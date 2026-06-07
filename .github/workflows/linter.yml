@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  issues: write # to comment on GitHub Issues/PRs
   packages: read
   statuses: write
 
