@@ -23,10 +23,10 @@ Install a specific version:
 steps:
   - uses: KengoTODA/setup-inspequte@v1
     with:
-      version: 0.13.0
+      version: 1.0.0
 ```
 
-`version` also accepts tags like `v0.13.0` or `inspequte-v0.13.0`.
+`version` also accepts tags like `v1.0.0` or `inspequte-v1.0.0`.
 
 ## Inputs
 
@@ -35,7 +35,7 @@ steps:
 
 ## Outputs
 
-- `version`: Installed release tag (for example, `inspequte-v0.13.0`).
+- `version`: Installed release tag (for example, `inspequte-v1.0.0`).
 
 ## Supported Runners
 
