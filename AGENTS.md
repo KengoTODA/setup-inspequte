@@ -47,28 +47,28 @@ naming.
 ## Development Workflow
 
 1. Install dependencies:
-   - `npm ci`
+   - `pnpm install --frozen-lockfile`
 1. Validate formatting/lint/tests:
-   - `npm run format:check`
-   - `npm run lint`
-   - `npm run ci-test`
+   - `pnpm run format:check`
+   - `pnpm run lint`
+   - `pnpm run ci-test`
 1. Rebuild distributable:
-   - `npm run package`
+   - `pnpm run package`
 1. Ensure `dist/` is updated when source changes.
 1. Before commit/push, re-run:
-   - `npm run lint`
-   - `npm run format:check`
-   - `npm run package` (when `src/` changed)
+   - `pnpm run lint`
+   - `pnpm run format:check`
+   - `pnpm run package` (when `src/` changed)
 
 ## Environment Notes
 
-- `.node-version` pins Node `24.4.0`.
-- If local `nodenv` does not have that version, a practical fallback is:
-  - `NODENV_VERSION=system npm ci`
+- `.node-version` pins Node `24.16.0`.
+- Enable the pinned package manager with `corepack enable` before the first
+  install.
 
 ## Change Guardrails
 
 - Keep `README.md` usage examples aligned with `action.yml`.
 - Keep tests aligned with release/tag naming conventions used by `inspequte`.
 - Do not remove caching behavior.
-- Do not manually edit `dist/`; always regenerate via `npm run package`.
+- Do not manually edit `dist/`; always regenerate via `pnpm run package`.
