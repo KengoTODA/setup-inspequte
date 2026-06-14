@@ -1,18 +1,18 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "setup-inspequte",
+  "description": "GitHub Actions to set up inspequte",
   "version": "0.0.0",
   "author": "",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@11.5.3",
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/KengoTODA/setup-inspequte",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/KengoTODA/setup-inspequte.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/KengoTODA/setup-inspequte/issues"
   },
   "keywords": [
     "actions"
@@ -31,7 +31,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "local-action": "local-action . src/main.ts .env",
-    "package": "node -e \"require('node:fs').rmSync('./dist', { recursive: true, force: true })\" && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "package": "node -e \"require('node:fs').rmSync('./dist', { recursive: true, force: true })\" && rollup --config rollup.config.mjs",
     "package:watch": "pnpm run package -- --watch",
     "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest",
     "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package"
@@ -68,7 +68,7 @@
     "rollup": "4.61.1",
     "ts-jest": "29.4.11",
     "ts-jest-resolver": "2.0.1",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
