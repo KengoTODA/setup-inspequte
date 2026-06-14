@@ -5,7 +5,7 @@
   "author": "",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "pnpm@11.5.3",
   "homepage": "https://github.com/actions/typescript-action",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "local-action": "local-action . src/main.ts .env",
-    "package": "rimraf ./dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "package": "node -e \"require('node:fs').rmSync('./dist', { recursive: true, force: true })\" && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
     "package:watch": "pnpm run package -- --watch",
     "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest",
     "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package"
@@ -43,6 +43,8 @@
   },
   "devDependencies": {
     "@eslint/compat": "2.1.0",
+    "@eslint/eslintrc": "3.3.5",
+    "@eslint/js": "9.39.4",
     "@github/local-action": "7.0.1",
     "@jest/globals": "30.4.1",
     "@rollup/plugin-commonjs": "29.0.3",
@@ -58,6 +60,7 @@
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-jest": "29.15.2",
     "eslint-plugin-prettier": "5.5.6",
+    "globals": "14.0.0",
     "jest": "30.4.2",
     "make-coverage-badge": "1.2.0",
     "prettier": "3.8.4",
