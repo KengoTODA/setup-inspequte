@@ -30,24 +30,25 @@ jobs:
         id: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          version: 11.5.3
+
       - name: Setup Node.js
         id: setup-node
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
           node-version-file: .node-version
-          cache: npm
-
-      - name: Remove dist/ Directory
-        id: remove-dist
-        run: npx rimraf ./dist
+          cache: pnpm
 
       - name: Install Dependencies
         id: install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build dist/ Directory
         id: build
-        run: npm run bundle
+        run: pnpm run bundle
 
       # This will fail the workflow if the `dist/` directory is different than
       # expected.

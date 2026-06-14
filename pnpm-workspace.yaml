@@ -1,0 +1,18 @@
+packages:
+  - .
+
+minimumReleaseAge: 4320
+strictMinimumReleaseAge: true
+minimumReleaseAgeIgnoreMissingTime: false
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 10080
+trustLockfile: false
+blockExoticSubdeps: true
+verifyDepsBeforeRun: error
+strictDepBuilds: true
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+managePackageManagerVersions: false
+packageManagerStrictVersion: true
+enableGlobalVirtualStore: false

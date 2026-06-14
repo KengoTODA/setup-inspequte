@@ -2,9 +2,36 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
+      "description": "Group non-major GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest", "minor", "patch"],
+      "groupName": "github actions minor and patch"
+    },
+    {
+      "description": "Group non-major development dependency updates",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "development dependencies"
+    },
+    {
+      "description": "Group production dependency patch updates",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["dependencies", "optionalDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "production dependencies"
+    },
+    {
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
+    },
+    {
+      "description": "Require review for pnpm updates",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["packageManager"],
+      "matchPackageNames": ["pnpm"],
+      "automerge": false
     }
   ],
   "minimumReleaseAge": "3 days",
