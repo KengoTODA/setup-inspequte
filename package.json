@@ -1,18 +1,18 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "setup-inspequte",
+  "description": "GitHub Actions to set up inspequte",
   "version": "0.0.0",
   "author": "",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@11.5.3",
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/KengoTODA/setup-inspequte",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/KengoTODA/setup-inspequte.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/KengoTODA/setup-inspequte/issues"
   },
   "keywords": [
     "actions"
