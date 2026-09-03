@@ -11,6 +11,7 @@ blockExoticSubdeps: true
 verifyDepsBeforeRun: error
 strictDepBuilds: true
 allowBuilds:
+  '@parcel/watcher@2.6.0': false
   esbuild: true
   unrs-resolver: true
 managePackageManagerVersions: false
