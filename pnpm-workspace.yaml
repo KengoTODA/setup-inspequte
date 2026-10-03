@@ -2,7 +2,7 @@ packages:
   - .
 
 minimumReleaseAge: 4320
-strictMinimumReleaseAge: true
+minimumReleaseAgeStrict: true
 minimumReleaseAgeIgnoreMissingTime: false
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080
@@ -14,6 +14,5 @@ allowBuilds:
   '@parcel/watcher@2.6.0': false
   esbuild: true
   unrs-resolver: true
-managePackageManagerVersions: false
-packageManagerStrictVersion: true
+pmOnFail: error
 enableGlobalVirtualStore: false
