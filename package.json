@@ -66,8 +66,8 @@
     "make-coverage-badge": "1.2.0",
     "prettier": "3.9.10",
     "prettier-eslint": "17.1.2",
-    "rollup": "4.64.6",
-    "ts-jest": "29.4.14",
+    "rollup": "4.64.7",
+    "ts-jest": "29.4.15",
     "ts-jest-resolver": "2.0.1",
     "typescript": "npm:@typescript/typescript6@6.0.2"
   },
