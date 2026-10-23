@@ -260,7 +260,7 @@ importers:
     optionalDependencies:
       '@rollup/rollup-linux-x64-gnu':
         specifier: '*'
-        version: 4.64.10
+        version: 4.64.12
 
 packages:
 
@@ -1324,6 +1324,12 @@ packages:
 
   '@rollup/rollup-linux-x64-gnu@4.64.10':
     resolution: {integrity: sha512-ntHtQOMw7oIshHRF1swV3vyBw+beQt9PeZ04O3D32EeDZUMoHMJuZKp4/fDllH/+xogeK0GUCONVfjjKusqKLg==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@rollup/rollup-linux-x64-gnu@4.64.12':
+    resolution: {integrity: sha512-mkbjxPqpR91u1JD7xY4aLZhr/Mqka4/RqGcG4WNGgN/lC1o7TzyCyqJoSJXp9qVVxMwpJGFlEF1VlERb+Ghw1Q==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
@@ -5156,6 +5162,9 @@ snapshots:
     optional: true
 
   '@rollup/rollup-linux-x64-gnu@4.64.10':
+    optional: true
+
+  '@rollup/rollup-linux-x64-gnu@4.64.12':
     optional: true
 
   '@rollup/rollup-linux-x64-musl@4.64.10':
